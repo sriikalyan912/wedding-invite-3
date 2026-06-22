@@ -49,10 +49,23 @@
     // Page title
     document.title = WEDDING.groomName + " & " + WEDDING.brideName + " — Wedding";
 
-    // Hero background image (separate layer so it can Ken-Burns zoom)
+    // Hero background image (separate layer so it can Ken-Burns zoom).
+    // Desktop and mobile use different photos via CSS custom properties; the
+    // stylesheet picks which one through a media query.
     const heroBg = $("#heroBg");
     if (heroBg && WEDDING.heroImage) {
-      heroBg.style.backgroundImage = "url('" + WEDDING.heroImage + "')";
+      const desktop = WEDDING.heroImage;
+      const mobile = WEDDING.heroImageMobile || desktop;
+      heroBg.style.setProperty("--hero-desktop", "url('" + desktop + "')");
+      heroBg.style.setProperty("--hero-mobile", "url('" + mobile + "')");
+      // If the mobile photo isn't available yet, fall back to the desktop one.
+      if (mobile !== desktop) {
+        const probe = new Image();
+        probe.onerror = function () {
+          heroBg.style.setProperty("--hero-mobile", "url('" + desktop + "')");
+        };
+        probe.src = mobile;
+      }
     }
   }
 
