@@ -83,16 +83,42 @@
     pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 21s7-6.3 7-11.5A7 7 0 0 0 5 9.5C5 14.7 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
   };
 
+  // True when there are 2+ events and they all share the exact same venue.
+  function eventsShareVenue(list) {
+    if (list.length < 2) return false;
+    const first = list[0];
+    return list.every(
+      (ev) =>
+        ev.venueName === first.venueName &&
+        ev.venueAddress === first.venueAddress &&
+        ev.mapsLink === first.mapsLink
+    );
+  }
+
   /* ---------- 2b. Build one card per event + the RSVP calendar buttons ---------- */
   function buildEvents() {
     const container = $("#eventsContainer");
     const rsvp = $("#rsvpActions");
+    // When every event is at the same place, show the venue once as a shared
+    // banner instead of repeating "Where" + a Maps button on every card.
+    const sharedVenue = eventsShareVenue(events);
 
     events.forEach((ev) => {
       // ----- Event card -----
       if (container) {
         const card = document.createElement("article");
         card.className = "event-card reveal";
+        const whereRow = sharedVenue
+          ? ""
+          : '<div class="event-card__row">' +
+              '<span class="event-card__icon">' + ICON.pin + "</span>" +
+              "<div><h3>Where</h3>" +
+                '<p class="event-card__lead">' + ev.venueName + "</p>" +
+                '<p class="event-card__addr">' + ev.venueAddress + "</p></div>" +
+            "</div>";
+        const mapsBtn = sharedVenue
+          ? ""
+          : '<a class="btn btn--ghost" target="_blank" rel="noopener" href="' + ev.mapsLink + '">View on Maps</a>';
         card.innerHTML =
           '<p class="event-card__label">' + ev.label + "</p>" +
           '<div class="event-card__row">' +
@@ -101,15 +127,10 @@
               '<p class="event-card__lead">' + ev.displayDate + "</p>" +
               "<p>" + ev.displayTime + "</p></div>" +
           "</div>" +
-          '<div class="event-card__row">' +
-            '<span class="event-card__icon">' + ICON.pin + "</span>" +
-            "<div><h3>Where</h3>" +
-              '<p class="event-card__lead">' + ev.venueName + "</p>" +
-              '<p class="event-card__addr">' + ev.venueAddress + "</p></div>" +
-          "</div>" +
+          whereRow +
           '<div class="event-card__actions">' +
             '<a class="btn btn--primary" target="_blank" rel="noopener" href="' + gcalUrl(ev) + '">Add to Calendar</a>' +
-            '<a class="btn btn--ghost" target="_blank" rel="noopener" href="' + ev.mapsLink + '">View on Maps</a>' +
+            mapsBtn +
           "</div>";
         container.appendChild(card);
       }
@@ -125,6 +146,21 @@
         rsvp.appendChild(a);
       }
     });
+
+    // ----- Shared venue banner (one common venue for all celebrations) -----
+    if (container && sharedVenue) {
+      const ev = events[0];
+      const lead = events.length === 2 ? "Both celebrations" : "All celebrations";
+      const banner = document.createElement("div");
+      banner.className = "venue-banner reveal";
+      banner.innerHTML =
+        '<span class="venue-banner__icon">' + ICON.pin + "</span>" +
+        '<p class="venue-banner__eyebrow">' + lead + " at one venue</p>" +
+        '<h3 class="venue-banner__name">' + ev.venueName + "</h3>" +
+        '<p class="venue-banner__addr">' + ev.venueAddress + "</p>" +
+        '<a class="btn btn--primary" target="_blank" rel="noopener" href="' + ev.mapsLink + '">View on Maps</a>';
+      container.insertAdjacentElement("afterend", banner);
+    }
   }
 
   /* ---------- 3. Gallery + Lightbox ---------- */
