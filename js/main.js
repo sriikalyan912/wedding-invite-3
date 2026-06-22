@@ -20,10 +20,10 @@
   function placeholder(label) {
     const svg =
       '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">' +
-      '<rect width="600" height="600" fill="#f3ebe1"/>' +
-      '<rect x="20" y="20" width="560" height="560" fill="none" stroke="#c2a36b" stroke-width="2"/>' +
-      '<text x="300" y="290" font-family="Georgia, serif" font-size="46" fill="#c2a36b" text-anchor="middle">&#10086;</text>' +
-      '<text x="300" y="340" font-family="Georgia, serif" font-size="22" fill="#a9874a" text-anchor="middle">' +
+      '<rect width="600" height="600" fill="#eaf2fa"/>' +
+      '<rect x="20" y="20" width="560" height="560" fill="none" stroke="#4a90d9" stroke-width="2"/>' +
+      '<text x="300" y="290" font-family="Georgia, serif" font-size="46" fill="#4a90d9" text-anchor="middle">&#10086;</text>' +
+      '<text x="300" y="340" font-family="Georgia, serif" font-size="22" fill="#2f6cb0" text-anchor="middle">' +
       (label || "Add your photo") +
       "</text></svg>";
     return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
@@ -197,7 +197,7 @@
   /* ---------- Falling petals (subtle ambience) ---------- */
   function initPetals() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const colors = ["#e3cd96", "#c9a253", "#d98a7a", "#f3e7d4"];
+    const colors = ["#a9cdee", "#4a90d9", "#7fb0e0", "#dbe8f4"];
     const count = window.innerWidth < 600 ? 9 : 16;
     for (let i = 0; i < count; i++) {
       const p = document.createElement("span");
