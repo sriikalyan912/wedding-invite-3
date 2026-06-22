@@ -50,20 +50,26 @@
     document.title = WEDDING.groomName + " & " + WEDDING.brideName + " — Wedding";
 
     // Hero background image (separate layer so it can Ken-Burns zoom).
-    // Desktop and mobile use different photos via CSS custom properties; the
-    // stylesheet picks which one through a media query.
+    // Phones and desktops use different photos, chosen here in JS so the URL
+    // resolves relative to the page (relative url() inside CSS variables would
+    // resolve relative to the stylesheet folder instead — and break).
     const heroBg = $("#heroBg");
     if (heroBg && WEDDING.heroImage) {
       const desktop = WEDDING.heroImage;
-      const mobile = WEDDING.heroImageMobile || desktop;
-      heroBg.style.setProperty("--hero-desktop", "url('" + desktop + "')");
-      heroBg.style.setProperty("--hero-mobile", "url('" + mobile + "')");
+      let mobile = WEDDING.heroImageMobile || desktop;
+      const mq = window.matchMedia("(min-width: 700px)");
+      const applyHero = function () {
+        const src = mq.matches ? desktop : mobile;
+        heroBg.style.backgroundImage = "url('" + src + "')";
+      };
+      applyHero();
+      // Swap the photo when crossing the breakpoint (resize / rotate).
+      if (mq.addEventListener) mq.addEventListener("change", applyHero);
+      else if (mq.addListener) mq.addListener(applyHero);
       // If the mobile photo isn't available yet, fall back to the desktop one.
       if (mobile !== desktop) {
         const probe = new Image();
-        probe.onerror = function () {
-          heroBg.style.setProperty("--hero-mobile", "url('" + desktop + "')");
-        };
+        probe.onerror = function () { mobile = desktop; applyHero(); };
         probe.src = mobile;
       }
     }

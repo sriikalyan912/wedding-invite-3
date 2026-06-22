@@ -163,7 +163,6 @@ section { padding: 5rem 1.5rem; position: relative; }
 .hero__bg {
   position: absolute; inset: -3%; z-index: 0;
   background-position: center; background-size: cover; background-repeat: no-repeat;
-  background-image: var(--hero-mobile); /* phones by default */
   animation: kenburns 24s ease-in-out infinite alternate;
 }
 @keyframes kenburns {
@@ -346,7 +345,6 @@ section { padding: 5rem 1.5rem; position: relative; }
 /* ============ RESPONSIVE ============ */
 @media (min-width: 700px) {
   section { padding: 6.5rem 2rem; }
-  .hero__bg { background-image: var(--hero-desktop); }
   .details__cards { flex-direction: row; align-items: stretch; }
   .event-card { flex: 1; }
   .event-card__actions { flex-direction: row; }
