@@ -70,7 +70,8 @@ const WEDDING = {
     "assets/images/gallery-6.jpeg",
     "assets/images/gallery-7.jpeg",
     "assets/images/gallery-8.jpeg",
-    "assets/images/gallery-9.jpeg"
+    "assets/images/gallery-9.jpeg",
+    "assets/images/gallery-10.jpeg"
   ],
 
   /* ---- Hero background image ----
