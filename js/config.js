@@ -68,7 +68,9 @@ const WEDDING = {
     "assets/images/gallery-4.jpeg",
     "assets/images/gallery-5.jpeg",
     "assets/images/gallery-6.jpeg",
-    "assetsimages//gallery-7.jpeg"
+    "assets/images//gallery-7.jpeg",
+     "assets/images//gallery-8.jpeg",
+     "assets/images//gallery-9.jpeg"
   ],
 
   /* ---- Hero background image ---- */
