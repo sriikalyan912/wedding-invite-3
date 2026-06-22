@@ -20,10 +20,10 @@
   function placeholder(label) {
     const svg =
       '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">' +
-      '<rect width="600" height="600" fill="#f3ebe1"/>' +
-      '<rect x="20" y="20" width="560" height="560" fill="none" stroke="#c2a36b" stroke-width="2"/>' +
-      '<text x="300" y="290" font-family="Georgia, serif" font-size="46" fill="#c2a36b" text-anchor="middle">&#10086;</text>' +
-      '<text x="300" y="340" font-family="Georgia, serif" font-size="22" fill="#a9874a" text-anchor="middle">' +
+      '<rect width="600" height="600" fill="#eaf2fa"/>' +
+      '<rect x="20" y="20" width="560" height="560" fill="none" stroke="#4a90d9" stroke-width="2"/>' +
+      '<text x="300" y="290" font-family="Georgia, serif" font-size="46" fill="#4a90d9" text-anchor="middle">&#10086;</text>' +
+      '<text x="300" y="340" font-family="Georgia, serif" font-size="22" fill="#2f6cb0" text-anchor="middle">' +
       (label || "Add your photo") +
       "</text></svg>";
     return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
@@ -49,10 +49,29 @@
     // Page title
     document.title = WEDDING.groomName + " & " + WEDDING.brideName + " — Wedding";
 
-    // Hero background image (separate layer so it can Ken-Burns zoom)
+    // Hero background image (separate layer so it can Ken-Burns zoom).
+    // Phones and desktops use different photos, chosen here in JS so the URL
+    // resolves relative to the page (relative url() inside CSS variables would
+    // resolve relative to the stylesheet folder instead — and break).
     const heroBg = $("#heroBg");
     if (heroBg && WEDDING.heroImage) {
-      heroBg.style.backgroundImage = "url('" + WEDDING.heroImage + "')";
+      const desktop = WEDDING.heroImage;
+      let mobile = WEDDING.heroImageMobile || desktop;
+      const mq = window.matchMedia("(min-width: 700px)");
+      const applyHero = function () {
+        const src = mq.matches ? desktop : mobile;
+        heroBg.style.backgroundImage = "url('" + src + "')";
+      };
+      applyHero();
+      // Swap the photo when crossing the breakpoint (resize / rotate).
+      if (mq.addEventListener) mq.addEventListener("change", applyHero);
+      else if (mq.addListener) mq.addListener(applyHero);
+      // If the mobile photo isn't available yet, fall back to the desktop one.
+      if (mobile !== desktop) {
+        const probe = new Image();
+        probe.onerror = function () { mobile = desktop; applyHero(); };
+        probe.src = mobile;
+      }
     }
   }
 
@@ -83,16 +102,42 @@
     pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 21s7-6.3 7-11.5A7 7 0 0 0 5 9.5C5 14.7 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
   };
 
+  // True when there are 2+ events and they all share the exact same venue.
+  function eventsShareVenue(list) {
+    if (list.length < 2) return false;
+    const first = list[0];
+    return list.every(
+      (ev) =>
+        ev.venueName === first.venueName &&
+        ev.venueAddress === first.venueAddress &&
+        ev.mapsLink === first.mapsLink
+    );
+  }
+
   /* ---------- 2b. Build one card per event + the RSVP calendar buttons ---------- */
   function buildEvents() {
     const container = $("#eventsContainer");
     const rsvp = $("#rsvpActions");
+    // When every event is at the same place, show the venue once as a shared
+    // banner instead of repeating "Where" + a Maps button on every card.
+    const sharedVenue = eventsShareVenue(events);
 
     events.forEach((ev) => {
       // ----- Event card -----
       if (container) {
         const card = document.createElement("article");
         card.className = "event-card reveal";
+        const whereRow = sharedVenue
+          ? ""
+          : '<div class="event-card__row">' +
+              '<span class="event-card__icon">' + ICON.pin + "</span>" +
+              "<div><h3>Where</h3>" +
+                '<p class="event-card__lead">' + ev.venueName + "</p>" +
+                '<p class="event-card__addr">' + ev.venueAddress + "</p></div>" +
+            "</div>";
+        const mapsBtn = sharedVenue
+          ? ""
+          : '<a class="btn btn--ghost" target="_blank" rel="noopener" href="' + ev.mapsLink + '">View on Maps</a>';
         card.innerHTML =
           '<p class="event-card__label">' + ev.label + "</p>" +
           '<div class="event-card__row">' +
@@ -101,15 +146,10 @@
               '<p class="event-card__lead">' + ev.displayDate + "</p>" +
               "<p>" + ev.displayTime + "</p></div>" +
           "</div>" +
-          '<div class="event-card__row">' +
-            '<span class="event-card__icon">' + ICON.pin + "</span>" +
-            "<div><h3>Where</h3>" +
-              '<p class="event-card__lead">' + ev.venueName + "</p>" +
-              '<p class="event-card__addr">' + ev.venueAddress + "</p></div>" +
-          "</div>" +
+          whereRow +
           '<div class="event-card__actions">' +
             '<a class="btn btn--primary" target="_blank" rel="noopener" href="' + gcalUrl(ev) + '">Add to Calendar</a>' +
-            '<a class="btn btn--ghost" target="_blank" rel="noopener" href="' + ev.mapsLink + '">View on Maps</a>' +
+            mapsBtn +
           "</div>";
         container.appendChild(card);
       }
@@ -125,6 +165,21 @@
         rsvp.appendChild(a);
       }
     });
+
+    // ----- Shared venue banner (one common venue for all celebrations) -----
+    if (container && sharedVenue) {
+      const ev = events[0];
+      const lead = events.length === 2 ? "Both celebrations" : "All celebrations";
+      const banner = document.createElement("div");
+      banner.className = "venue-banner reveal";
+      banner.innerHTML =
+        '<span class="venue-banner__icon">' + ICON.pin + "</span>" +
+        '<p class="venue-banner__eyebrow">' + lead + " at one venue</p>" +
+        '<h3 class="venue-banner__name">' + ev.venueName + "</h3>" +
+        '<p class="venue-banner__addr">' + ev.venueAddress + "</p>" +
+        '<a class="btn btn--primary" target="_blank" rel="noopener" href="' + ev.mapsLink + '">View on Maps</a>';
+      container.insertAdjacentElement("afterend", banner);
+    }
   }
 
   /* ---------- 3. Gallery + Lightbox ---------- */
@@ -197,7 +252,7 @@
   /* ---------- Falling petals (subtle ambience) ---------- */
   function initPetals() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const colors = ["#e3cd96", "#c9a253", "#d98a7a", "#f3e7d4"];
+    const colors = ["#a9cdee", "#4a90d9", "#7fb0e0", "#dbe8f4"];
     const count = window.innerWidth < 600 ? 9 : 16;
     for (let i = 0; i < count; i++) {
       const p = document.createElement("span");

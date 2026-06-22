@@ -68,13 +68,17 @@ const WEDDING = {
     "assets/images/gallery-4.jpeg",
     "assets/images/gallery-5.jpeg",
     "assets/images/gallery-6.jpeg",
-    "assets/images//gallery-7.jpeg",
-     "assets/images//gallery-8.jpeg",
-     "assets/images//gallery-9.jpeg"
+    "assets/images/gallery-7.jpeg",
+    "assets/images/gallery-8.jpeg",
+    "assets/images/gallery-9.jpeg"
   ],
 
-  /* ---- Hero background image ---- */
-  heroImage: "assets/images/hero.jpeg",
+  /* ---- Hero background image ----
+     Two versions are used: a wide image for desktop and a portrait-friendly
+     image for phones. Drop a `hero-mobile.jpeg` into /assets/images for the
+     phone view. If that file is missing, the desktop image is used everywhere. */
+  heroImage: "assets/images/hero.jpeg",              // desktop / wide screens
+  heroImageMobile: "assets/images/hero-mobile.jpeg", // phones (portrait)
 
   /* ---- Footer ---- */
   hashtag: "#ajithwedsshalini",
