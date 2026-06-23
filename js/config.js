@@ -33,7 +33,7 @@ const WEDDING = {
       displayDate: "Thursday, June 25, 2026",
       displayTime: "04:30 AM onwards",
       venueName: "Sri GopiKrishna Kalyana Mandapam",
-      venueAddress: "Arakkonam-Sholingur (Oppo. Canara Bank)",
+      venueAddress: "Arakkonam-Sholingur Road (Oppo. Canara Bank)",
       // Paste the full Google Maps share link to this venue here.
       mapsLink: "https://maps.app.goo.gl/8s8cS6BcEh597Anw7",
     },
