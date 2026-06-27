@@ -28,9 +28,9 @@ const WEDDING = {
   events: [
     {
       label: "The Wedding",
-      dateISO: "2026-06-25T04:30:00",
+      dateISO: "2026-06-30T04:30:00",
       durationHours: 3,
-      displayDate: "Thursday, June 25, 2026",
+      displayDate: "Thursday, June 30, 2026",
       displayTime: "04:30 AM onwards",
       venueName: "Sri GopiKrishna Kalyana Mandapam",
       venueAddress: "Arakkonam-Sholingur Road (Oppo. Canara Bank)",
@@ -39,9 +39,9 @@ const WEDDING = {
     },
     {
       label: "The Reception",
-      dateISO: "2026-06-24T18:00:00",
+      dateISO: "2026-06-30T18:00:00",
       durationHours: 4,
-      displayDate: "Wednessday, June 24, 2026",
+      displayDate: "Wednessday, June 30, 2026",
       displayTime: "06:00 PM onwards",
       venueName: "Sri GopiKrishna Kalyana Mandapam",
       venueAddress: "Arakkonam-Sholingur (Oppo. Canara Bank)",
